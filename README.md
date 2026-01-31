@@ -2,6 +2,38 @@
 
 Character tools is a web application created to make it easier for me to create and edit character cards.
 
+## Storage Migration ⚠️
+
+**NEW:** The application now supports **SQLite filesystem storage** for persistent data that won't be lost when clearing browser data!
+
+See [Migration Guide](plans/migration-guide.md) for detailed instructions on migrating from IndexedDB to SQLite.
+
+### Quick Start with SQLite
+
+1. **Start Backend:**
+   ```bash
+   cd backend
+   npm install
+   npm run dev
+   ```
+
+2. **Configure Frontend:**
+   ```bash
+   # Create .env file
+   cp .env.example .env
+   # Set VITE_API_URL=http://localhost:3000/api
+   ```
+
+3. **Start Frontend:**
+   ```bash
+   bun install
+   bun run dev
+   ```
+
+4. **Migrate Existing Data:**
+   - Export from the app (Manage Database → Export)
+   - Run migration: `cd backend && npm run migrate <export-file>`
+
 # Features
 
 ## Character Editor
@@ -16,11 +48,12 @@ Edit character cards in a simple and easy to use interface.
 
 ## Character Library
 
-Save characters in a "on browser" library that use indexedDb, all your information is stored locally, no data is sent to the server.
+Save characters in a library with persistent SQLite storage. All your information is stored locally on the filesystem, no data is sent to any external server.
 
 - Easy visualization of your characters in the library.
 - Import single or multiple characters at once.
 - Save a copy of your library to use in another browser.
+- **NEW:** Persistent storage that survives browser data clearing!
 
 ## CharacterBook editor
 
@@ -62,6 +95,39 @@ bun run dev
 6. Be happy!
 
 ## Deployment
+
+### With SQLite Backend (Recommended)
+
+1. **Install Backend Dependencies:**
+   ```bash
+   cd backend
+   npm install
+   ```
+
+2. **Build Backend:**
+   ```bash
+   cd backend
+   npm run build
+   ```
+
+3. **Start Backend:**
+   ```bash
+   cd backend
+   npm start
+   ```
+
+4. **Build Frontend:**
+   ```bash
+   bun install
+   bun run build
+   ```
+
+5. **Deploy:**
+   - Deploy backend files to your server
+   - Deploy frontend `dist/` folder to your static hosting
+   - Configure reverse proxy (nginx/Apache) to route `/api/` to backend
+
+### Without Backend (IndexedDB Only)
 
 1. Install the dependencies
 

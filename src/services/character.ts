@@ -1,60 +1,46 @@
-import { dataBase } from '@/lib/dexie'
+import { type CharacterData, characterApi, databaseApi } from '@/services/api'
 import {
   type CharacterDatabaseData,
   type CharacterEditorState
 } from '@/types/character'
-import 'dexie-export-import'
-import { nanoid } from 'nanoid'
 
 export const createCharacter = async (
   character: CharacterEditorState
 ): Promise<CharacterDatabaseData> => {
-  const id = nanoid()
-  await dataBase.characters.add({
-    ...character,
-    id
-  })
-  return (await dataBase.characters
-    .where('id')
-    .equals(id)
-    .first()) as CharacterDatabaseData
+  return await characterApi.create(character as CharacterData)
 }
 
 export const getAllCharacters = async (): Promise<CharacterDatabaseData[]> => {
-  return await dataBase.characters.toArray()
+  return await characterApi.getAll()
 }
 
 export const updateCharacter = async (
   character: CharacterDatabaseData
 ): Promise<CharacterDatabaseData> => {
-  await dataBase.characters.put(character)
-  return (await dataBase.characters
-    .where('id')
-    .equals(character.id)
-    .first()) as CharacterDatabaseData
+  return await characterApi.update(
+    character.id,
+    character as Partial<CharacterData>
+  )
 }
 
 export const deleteCharacter = async (id: string): Promise<void> => {
-  await dataBase.characters.where('id').equals(id).delete()
+  await characterApi.delete(id)
 }
 
 export const deleteAllCharacters = async (): Promise<void> => {
-  await dataBase.characters.clear()
+  // Delete all characters by getting them and deleting each
+  const characters = await characterApi.getAll()
+  for (const character of characters) {
+    await characterApi.delete(character.id)
+  }
 }
 
 export const exportCharacterCollection = async (): Promise<Blob> => {
-  const blob = await dataBase.export({
-    filter(table) {
-      return table === 'characters'
-    }
-  })
-  return blob
+  return await databaseApi.export()
 }
 
 export const importCharacterCollection = async (file: File): Promise<void> => {
-  await dataBase.import(file, {
-    filter(table) {
-      return table === 'characters'
-    }
-  })
+  const text = await file.text()
+  const data = JSON.parse(text)
+  await databaseApi.import(data)
 }

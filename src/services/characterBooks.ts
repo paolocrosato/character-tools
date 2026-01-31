@@ -1,75 +1,63 @@
-import { dataBase } from '@/lib/dexie'
+import {
+  type CharacterBookData,
+  characterBookApi,
+  databaseApi
+} from '@/services/api'
 import {
   type CharacterBookDatabaseData,
   type CharacterBookEditorState
 } from '@/types/lorebook'
-import 'dexie-export-import'
-import { nanoid } from 'nanoid'
 
 export const createCharacterBook = async (
   characterBook: CharacterBookEditorState
 ): Promise<CharacterBookDatabaseData> => {
-  if (characterBook.name === undefined || characterBook.name === '')
+  if (characterBook.name === undefined || characterBook.name === '') {
     throw new Error('Character book name is required')
-  const id = nanoid()
-  await dataBase.characterBooks.add({
-    ...characterBook,
-    id
-  })
-  return (await dataBase.characterBooks
-    .where('id')
-    .equals(id)
-    .first()) as CharacterBookDatabaseData
+  }
+  return await characterBookApi.create(characterBook as CharacterBookData)
 }
 
 export const getCharacterBook = async (
   id: string
 ): Promise<CharacterBookDatabaseData> => {
-  return (await dataBase.characterBooks
-    .where('id')
-    .equals(id)
-    .first()) as CharacterBookDatabaseData
+  return await characterBookApi.getById(id)
 }
 
 export const getAllCharacterBooks = async (): Promise<
   CharacterBookDatabaseData[]
 > => {
-  return await dataBase.characterBooks.toArray()
+  return await characterBookApi.getAll()
 }
 
 export const updateCharacterBook = async (
   characterBook: CharacterBookDatabaseData
 ): Promise<CharacterBookDatabaseData> => {
-  await dataBase.characterBooks.put(characterBook)
-  return (await dataBase.characterBooks
-    .where('id')
-    .equals(characterBook.id)
-    .first()) as CharacterBookDatabaseData
+  return await characterBookApi.update(
+    characterBook.id,
+    characterBook as Partial<CharacterBookData>
+  )
 }
 
 export const deleteCharacterBook = async (id: string): Promise<void> => {
-  await dataBase.characterBooks.where('id').equals(id).delete()
+  await characterBookApi.delete(id)
 }
 
 export const deleteAllCharacterBooks = async (): Promise<void> => {
-  await dataBase.characterBooks.clear()
+  // Delete all character books by getting them and deleting each
+  const books = await characterBookApi.getAll()
+  for (const book of books) {
+    await characterBookApi.delete(book.id)
+  }
 }
 
 export const exportCharacterBookCollection = async (): Promise<Blob> => {
-  const blob = await dataBase.export({
-    filter(table) {
-      return table === 'characterBooks'
-    }
-  })
-  return blob
+  return await databaseApi.export()
 }
 
 export const importCharacterBookCollection = async (
   file: File
 ): Promise<void> => {
-  await dataBase.import(file, {
-    filter(table) {
-      return table === 'characterBooks'
-    }
-  })
+  const text = await file.text()
+  const data = JSON.parse(text)
+  await databaseApi.import(data)
 }

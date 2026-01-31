@@ -1,14 +1,15 @@
-import { dataBase } from '@/lib/dexie'
+import { type DatabaseExport, databaseApi } from '@/services/api'
 
 export const exportDatabase = async (): Promise<Blob> => {
-  const blob = await dataBase.export()
-  return blob
+  return await databaseApi.export()
 }
 
 export const importDatabase = async (file: File): Promise<void> => {
-  await dataBase.import(file)
+  const text = await file.text()
+  const data: DatabaseExport = JSON.parse(text)
+  await databaseApi.import(data)
 }
 
 export const deleteDatabase = async (): Promise<void> => {
-  await dataBase.delete({ disableAutoOpen: false })
+  await databaseApi.clear()
 }
