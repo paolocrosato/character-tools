@@ -48,7 +48,7 @@ const Header: FC = () => {
             to="/"
             sx={{ color: 'inherit', textDecoration: 'none' }}
           >
-            <Typography sx={visuallyHidden}>Character Tools</Typography>
+            <Typography style={visuallyHidden}>Character Tools</Typography>
             <FontAwesomeIcon
               icon={faScrewdriverWrench}
               size="2x"
