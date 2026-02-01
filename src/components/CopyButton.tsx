@@ -1,6 +1,5 @@
-import { faCopy } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Tooltip } from '@mui/material'
+import { Copy } from 'lucide-react'
 import { type FC, type ReactNode, useEffect, useState } from 'react'
 
 export interface CopyButtonProps {
@@ -50,10 +49,7 @@ const CopyButton: FC<CopyButtonProps> = ({ children, textToCopy, tooltip }) => {
       >
         {children}
         &nbsp;
-        <FontAwesomeIcon
-          icon={faCopy}
-          size="sm"
-        />
+        <Copy size={16} />
       </Button>
     </Tooltip>
   )

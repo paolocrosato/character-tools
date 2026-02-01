@@ -1,12 +1,10 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Tab, type Theme, Typography, useMediaQuery } from '@mui/material'
+import { Book, BookOpen, Upload } from 'lucide-react'
 import { type FC, useState } from 'react'
 import CharacterBookTable from '@/components/characterBookLibrary/CharacterBookTable'
 import ImportCharacterBooks from '@/components/characterBookLibrary/ImportCharacterBooks'
 import ManageLibrary from '@/components/characterBookLibrary/ManageLibrary'
-import bookArrowUp from '@/components/icons/bookArrowUp'
-import Books from '@/components/icons/books'
 import Fluid from '@/Layouts/FluidLayout'
 
 type Tabs = 'Library' | 'Manage' | 'Import'
@@ -45,17 +43,17 @@ const CharacterBookLibrary: FC = () => {
             }}
           >
             <Tab
-              icon={<FontAwesomeIcon icon={Books} />}
+              icon={<BookOpen size={20} />}
               label="Character Book Library"
               value="Library"
             />
             <Tab
-              icon={<FontAwesomeIcon icon={bookArrowUp} />}
+              icon={<Upload size={20} />}
               label="Import Character Book"
               value="Import"
             />
             <Tab
-              icon={<FontAwesomeIcon icon={Books} />}
+              icon={<Book size={20} />}
               label="Manage Library"
               value="Manage"
             />

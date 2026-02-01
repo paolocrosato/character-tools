@@ -1,11 +1,4 @@
 import {
-  faBug,
-  faMoon,
-  faScrewdriverWrench,
-  faSun
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
   Box,
   IconButton,
   Link as MuiLink,
@@ -13,6 +6,7 @@ import {
   Typography
 } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
+import { Bug, Moon, Sun, Wrench } from 'lucide-react'
 import { type FC } from 'react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import useAppDispatch from '@/hooks/useAppDispatch'
@@ -49,10 +43,7 @@ const Header: FC = () => {
             sx={{ color: 'inherit', textDecoration: 'none' }}
           >
             <Typography style={visuallyHidden}>Character Tools</Typography>
-            <FontAwesomeIcon
-              icon={faScrewdriverWrench}
-              size="2x"
-            />
+            <Wrench size={20} />
           </MuiLink>
         </Tooltip>
       </div>
@@ -63,10 +54,7 @@ const Header: FC = () => {
             href="https://github.com/SrJuggernaut/character-tools/issues"
             target="_blank"
           >
-            <FontAwesomeIcon
-              icon={faBug}
-              size="sm"
-            />
+            <Bug size={16} />
           </IconButton>
         </Tooltip>
         <Tooltip title="Settings">
@@ -76,10 +64,7 @@ const Header: FC = () => {
               dispatch(setOpenSettings(true))
             }}
           >
-            <FontAwesomeIcon
-              icon={faScrewdriverWrench}
-              size="sm"
-            />
+            <Wrench size={16} />
           </IconButton>
         </Tooltip>
         <Tooltip title="Toggle theme">
@@ -89,18 +74,8 @@ const Header: FC = () => {
               dispatch(setTheme(theme === 'light' ? 'dark' : 'light'))
             }}
           >
-            {theme === 'light' && (
-              <FontAwesomeIcon
-                icon={faMoon}
-                size="sm"
-              />
-            )}
-            {theme === 'dark' && (
-              <FontAwesomeIcon
-                icon={faSun}
-                size="sm"
-              />
-            )}
+            {theme === 'light' && <Moon size={16} />}
+            {theme === 'dark' && <Sun size={16} />}
           </IconButton>
         </Tooltip>
         <NavigationMenu />

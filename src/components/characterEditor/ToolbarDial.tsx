@@ -1,13 +1,6 @@
-import {
-  faCode,
-  faLeftLong,
-  faRightLong,
-  faScrewdriverWrench,
-  faUser
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { SpeedDial, SpeedDialAction } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import { ArrowDown, ArrowUp, Code, User, Wrench } from 'lucide-react'
 import useAppDispatch from '@/hooks/useAppDispatch'
 import useAppSelector from '@/hooks/useAppSelector'
 import { updateCharacterEditor } from '@/state/characterEditorSlice'
@@ -32,12 +25,7 @@ const ToolbarDial = () => {
       ariaLabel="Character Data Toolbar"
       sx={{ position: 'fixed', bottom: 72 + 16, right: 16 }}
       FabProps={{ size: 'large' }}
-      icon={
-        <FontAwesomeIcon
-          icon={faScrewdriverWrench}
-          size="xl"
-        />
-      }
+      icon={<Wrench size={20} />}
     >
       <SpeedDialAction
         classes={{ staticTooltipLabel: classes.tooltips }}
@@ -46,18 +34,9 @@ const ToolbarDial = () => {
         FabProps={{ size: 'medium' }}
         icon={
           <>
-            <FontAwesomeIcon
-              icon={faUser}
-              size="sm"
-            />
-            <FontAwesomeIcon
-              icon={faRightLong}
-              size="sm"
-            />
-            <FontAwesomeIcon
-              icon={faCode}
-              size="sm"
-            />
+            <User size={16} />
+            <ArrowUp size={20} />
+            <Code size={16} />
           </>
         }
         onClick={() => {
@@ -72,18 +51,9 @@ const ToolbarDial = () => {
         FabProps={{ size: 'medium' }}
         icon={
           <>
-            <FontAwesomeIcon
-              icon={faUser}
-              size="sm"
-            />
-            <FontAwesomeIcon
-              icon={faLeftLong}
-              size="sm"
-            />
-            <FontAwesomeIcon
-              icon={faCode}
-              size="sm"
-            />
+            <User size={16} />
+            <ArrowDown size={20} />
+            <Code size={16} />
           </>
         }
         onClick={() => {

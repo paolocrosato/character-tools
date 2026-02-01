@@ -1,5 +1,3 @@
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   Card,
   CardActionArea,
@@ -7,6 +5,7 @@ import {
   IconButton,
   Typography
 } from '@mui/material'
+import { ChevronDown } from 'lucide-react'
 import { type FC } from 'react'
 import { Link } from 'react-router-dom'
 import Fluid from '@/Layouts/FluidLayout'
@@ -95,10 +94,7 @@ const Home: FC = () => {
           component="a"
           href="#tools"
         >
-          <FontAwesomeIcon
-            icon={faChevronDown}
-            size="lg"
-          />
+          <ChevronDown size={24} />
         </IconButton>
       </div>
       <div

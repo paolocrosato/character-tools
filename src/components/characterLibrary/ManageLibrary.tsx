@@ -1,6 +1,5 @@
-import { faFileImport } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Box, Button, Link as MuiLink, Typography } from '@mui/material'
+import { Upload } from 'lucide-react'
 import { type FC } from 'react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import Drop from '@/components/ui/Drop'
@@ -220,10 +219,7 @@ const ManageLibrary: FC = () => {
               }
             }}
           >
-            <FontAwesomeIcon
-              icon={faFileImport}
-              size="3x"
-            />
+            <Upload size={32} />
             <Typography
               variant="subtitle1"
               align="center"

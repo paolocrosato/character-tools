@@ -1,5 +1,3 @@
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   Box,
   Checkbox,
@@ -13,6 +11,7 @@ import {
   TextField,
   Typography
 } from '@mui/material'
+import { Plus } from 'lucide-react'
 import { type FC, useState } from 'react'
 import NumberField from '@/components/ui/form/NumberField'
 import { type CharacterBookEntry } from '@/types/lorebook'
@@ -227,10 +226,7 @@ const EntryEditor: FC<EntryEditorProps> = ({ onChange, value }) => {
                       setKeyToAdd('')
                     }}
                   >
-                    <FontAwesomeIcon
-                      icon={faPlus}
-                      size="sm"
-                    />
+                    <Plus size={16} />
                   </IconButton>
                 )
               }
@@ -304,10 +300,7 @@ const EntryEditor: FC<EntryEditorProps> = ({ onChange, value }) => {
                       setSecondaryKeyToAdd('')
                     }}
                   >
-                    <FontAwesomeIcon
-                      icon={faPlus}
-                      size="sm"
-                    />
+                    <Plus size={16} />
                   </IconButton>
                 )
               }

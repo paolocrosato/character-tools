@@ -1,14 +1,4 @@
 import {
-  faBars,
-  faBook,
-  faDatabase,
-  faHome,
-  faUserPen,
-  faUsersBetweenLines,
-  type IconDefinition
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
   Box,
   IconButton,
   List,
@@ -19,31 +9,39 @@ import {
   SwipeableDrawer,
   Tooltip
 } from '@mui/material'
+import {
+  Book,
+  BookOpen,
+  Database,
+  Home,
+  Menu,
+  PenTool,
+  Users
+} from 'lucide-react'
 import { type FC, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import Books from '@/components/icons/books'
 
 interface MenuLink {
   label: string
   url: string
-  icon: IconDefinition
+  icon: FC
 }
 
 const MenuLinks: MenuLink[] = [
-  { label: 'Home', url: '/', icon: faHome },
-  { label: 'Character Editor', url: '/character-editor', icon: faUserPen },
+  { label: 'Home', url: '/', icon: Home },
+  { label: 'Character Editor', url: '/character-editor', icon: PenTool },
   {
     label: 'Character Library',
     url: '/character-library',
-    icon: faUsersBetweenLines
+    icon: Users
   },
-  { label: 'CharacterBook Editor', url: '/characterbook-editor', icon: faBook },
+  { label: 'CharacterBook Editor', url: '/characterbook-editor', icon: Book },
   {
     label: 'CharacterBook Library',
     url: '/characterbook-library',
-    icon: Books
+    icon: BookOpen
   },
-  { label: 'Manage Database', url: '/manage-database', icon: faDatabase }
+  { label: 'Manage Database', url: '/manage-database', icon: Database }
 ]
 
 const NavigationMenu: FC = () => {
@@ -57,10 +55,7 @@ const NavigationMenu: FC = () => {
             setOpenDrawer(true)
           }}
         >
-          <FontAwesomeIcon
-            icon={faBars}
-            size="sm"
-          />
+          <Menu size={16} />
         </IconButton>
       </Tooltip>
       <SwipeableDrawer
@@ -105,7 +100,7 @@ const NavigationMenu: FC = () => {
                   selected={location.pathname === menuLink.url}
                 >
                   <ListItemIcon>
-                    <FontAwesomeIcon icon={menuLink.icon} />
+                    <menuLink.icon />
                   </ListItemIcon>
                   <ListItemText primary={menuLink.label} />
                 </ListItemButton>

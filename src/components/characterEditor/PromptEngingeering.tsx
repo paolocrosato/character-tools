@@ -1,6 +1,5 @@
-import { faTimes } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Autocomplete, TextField, Typography } from '@mui/material'
+import { X } from 'lucide-react'
 import { type FC, useEffect, useState } from 'react'
 import CopyButton from '@/components/CopyButton'
 import ToolbarDial from '@/components/characterEditor/ToolbarDial'
@@ -156,12 +155,7 @@ const PromptEngingeering: FC = () => {
               fullWidth
             />
           )}
-          clearIcon={
-            <FontAwesomeIcon
-              icon={faTimes}
-              size="xs"
-            />
-          }
+          clearIcon={<X size={12} />}
         />
       )}
       <ToolbarDial />

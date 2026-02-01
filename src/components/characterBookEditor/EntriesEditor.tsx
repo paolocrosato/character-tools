@@ -1,6 +1,5 @@
-import { faArrowLeft, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, IconButton, Paper, Typography } from '@mui/material'
+import { ArrowLeft, Pencil, Trash } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { type FC, useState } from 'react'
 import EntryEditor from '@/components/characterBookEditor/EntryEditor'
@@ -95,10 +94,7 @@ const EntriesEditor: FC = () => {
                       setEditingEntry(index)
                     }}
                   >
-                    <FontAwesomeIcon
-                      icon={faEdit}
-                      size="sm"
-                    />
+                    <Pencil size={16} />
                   </IconButton>
                   <IconButton
                     onClick={() => {
@@ -109,10 +105,7 @@ const EntriesEditor: FC = () => {
                       )
                     }}
                   >
-                    <FontAwesomeIcon
-                      icon={faTrash}
-                      size="sm"
-                    />
+                    <Trash size={16} />
                   </IconButton>
                 </div>
               </Paper>
@@ -172,10 +165,7 @@ const EntriesEditor: FC = () => {
                   setEditingEntry(undefined)
                 }}
               >
-                <FontAwesomeIcon
-                  icon={faArrowLeft}
-                  size="sm"
-                />
+                <ArrowLeft size={20} />
               </IconButton>
             </div>
             <EntryEditor

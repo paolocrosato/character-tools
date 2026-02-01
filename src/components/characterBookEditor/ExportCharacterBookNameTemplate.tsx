@@ -1,6 +1,5 @@
-import { faUndo } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconButton, Link, TextField, Tooltip, Typography } from '@mui/material'
+import { Undo } from 'lucide-react'
 import { type FC } from 'react'
 import CopyButton from '@/components/CopyButton'
 import useAppDispatch from '@/hooks/useAppDispatch'
@@ -79,10 +78,7 @@ const ExportCharacterBookNameTemplate: FC = () => {
                         )
                       }}
                     >
-                      <FontAwesomeIcon
-                        icon={faUndo}
-                        size="sm"
-                      />
+                      <Undo size={16} />
                     </IconButton>
                   </Tooltip>
                 </>

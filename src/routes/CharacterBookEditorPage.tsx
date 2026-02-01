@@ -1,18 +1,12 @@
-import {
-  faBook,
-  faFileExport,
-  faFileImport
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Tab, type Theme, Typography, useMediaQuery } from '@mui/material'
+import { Book, Download, Upload } from 'lucide-react'
 import { type FC, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import CharacterBookData from '@/components/characterBookEditor/CharacterBookData'
 import EntriesEditor from '@/components/characterBookEditor/EntriesEditor'
 import ExportOrSave from '@/components/characterBookEditor/ExportOrSave'
 import ImportOrCreate from '@/components/characterBookEditor/ImportOrCreate'
-import BookFont from '@/components/icons/bookFont'
 import FluidLayout from '@/Layouts/FluidLayout'
 
 type tabs =
@@ -72,22 +66,22 @@ const CharacterBookEditorPage: FC = () => {
             }}
           >
             <Tab
-              icon={<FontAwesomeIcon icon={faFileImport} />}
+              icon={<Upload size={20} />}
               label="Import or Create"
               value="import-create"
             />
             <Tab
-              icon={<FontAwesomeIcon icon={faBook} />}
+              icon={<Book size={20} />}
               label="Character Book Data"
               value="characterbook-data"
             />
             <Tab
-              icon={<FontAwesomeIcon icon={BookFont} />}
+              icon={<Book size={20} />}
               label="Entries"
               value="entries"
             />
             <Tab
-              icon={<FontAwesomeIcon icon={faFileExport} />}
+              icon={<Download size={20} />}
               label="Export or Save"
               value="export-or-save"
             />

@@ -1,10 +1,4 @@
 import {
-  faDownLong,
-  faTrashAlt,
-  faUpLong
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
   Box,
   Button,
   IconButton,
@@ -14,6 +8,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material'
+import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react'
 import { type FC } from 'react'
 import CopyButton from '@/components/CopyButton'
 import ToolbarDial from '@/components/characterEditor/ToolbarDial'
@@ -192,10 +187,7 @@ const CharacterData: FC = () => {
                     )
                   }}
                 >
-                  <FontAwesomeIcon
-                    icon={faUpLong}
-                    size="sm"
-                  />
+                  <ArrowUp size={16} />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Move Down">
@@ -223,10 +215,7 @@ const CharacterData: FC = () => {
                     )
                   }}
                 >
-                  <FontAwesomeIcon
-                    icon={faDownLong}
-                    size="sm"
-                  />
+                  <ArrowDown size={16} />
                 </IconButton>
               </Tooltip>
             </div>
@@ -264,10 +253,7 @@ const CharacterData: FC = () => {
                           )
                         }}
                       >
-                        <FontAwesomeIcon
-                          icon={faTrashAlt}
-                          size="sm"
-                        />
+                        <Trash2 size={16} />
                       </IconButton>
                     </InputAdornment>
                   )

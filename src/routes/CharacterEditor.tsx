@@ -1,13 +1,6 @@
-import {
-  faCircleInfo,
-  faFileExport,
-  faFileImport,
-  faUserCog,
-  faUserGear
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Tab, type Theme, Typography, useMediaQuery } from '@mui/material'
+import { Download, Info, Settings, Upload } from 'lucide-react'
 import { type FC, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import CharacterData from '@/components/characterEditor/CharacterData'
@@ -76,27 +69,27 @@ const CharacterEditorPage: FC = () => {
             }}
           >
             <Tab
-              icon={<FontAwesomeIcon icon={faFileImport} />}
+              icon={<Upload size={20} />}
               label="Import or Create"
               value="import-create"
             />
             <Tab
-              icon={<FontAwesomeIcon icon={faUserCog} />}
+              icon={<Settings size={20} />}
               label="Character Data"
               value="character-data"
             />
             <Tab
-              icon={<FontAwesomeIcon icon={faCircleInfo} />}
+              icon={<Info size={20} />}
               label="Character Metadata"
               value="character-metadata"
             />
             <Tab
-              icon={<FontAwesomeIcon icon={faUserGear} />}
+              icon={<Settings size={20} />}
               label="Prompt Engineering"
               value="prompt-engineering"
             />
             <Tab
-              icon={<FontAwesomeIcon icon={faFileExport} />}
+              icon={<Download size={20} />}
               label="Export or Save"
               value="export-or-save"
             />

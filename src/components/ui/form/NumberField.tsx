@@ -1,17 +1,12 @@
 import { NumberField as BaseNumberField } from '@base-ui-components/react'
 import {
-  faArrowsLeftRight,
-  faMinus,
-  faPlus
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
   Button,
   FormControl,
   FormHelperText,
   FormLabel,
   Input
 } from '@mui/material'
+import { ArrowLeftRight, Minus, Plus } from 'lucide-react'
 import { FC, ReactNode, useId } from 'react'
 
 export interface NumberFieldProps {
@@ -71,7 +66,7 @@ const NumberField: FC<NumberFieldProps> = ({
         <BaseNumberField.ScrubArea>
           <FormLabel htmlFor={id}>{label}</FormLabel>
           <BaseNumberField.ScrubAreaCursor>
-            <FontAwesomeIcon icon={faArrowsLeftRight} />
+            <ArrowLeftRight size={16} />
           </BaseNumberField.ScrubAreaCursor>
         </BaseNumberField.ScrubArea>
         <BaseNumberField.Group
@@ -94,10 +89,7 @@ const NumberField: FC<NumberFieldProps> = ({
               />
             }
           >
-            <FontAwesomeIcon
-              icon={faMinus}
-              size="lg"
-            />
+            <Minus size={24} />
           </BaseNumberField.Decrement>
           <BaseNumberField.Input
             render={<Input css={{ flexGrow: 1, paddingInline: '0.5rem' }} />}
@@ -116,10 +108,7 @@ const NumberField: FC<NumberFieldProps> = ({
               />
             }
           >
-            <FontAwesomeIcon
-              icon={faPlus}
-              size="lg"
-            />
+            <Plus size={24} />
           </BaseNumberField.Increment>
         </BaseNumberField.Group>
       </BaseNumberField.Root>

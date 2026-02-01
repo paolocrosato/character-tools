@@ -1,5 +1,3 @@
-import { faPencil, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconButton, Tooltip } from '@mui/material'
 import {
   DataGrid,
@@ -11,6 +9,7 @@ import {
   type GridSortModel,
   getGridStringOperators
 } from '@mui/x-data-grid'
+import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { type FC, useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAppDispatch from '@/hooks/useAppDispatch'
@@ -217,10 +216,7 @@ const CharacterTable: FC = () => {
               )
             }}
           >
-            <FontAwesomeIcon
-              icon={faPencil}
-              size="sm"
-            />
+            <Pencil size={16} />
           </IconButton>
         </Tooltip>,
         <Tooltip
@@ -280,10 +276,7 @@ const CharacterTable: FC = () => {
               )
             }}
           >
-            <FontAwesomeIcon
-              icon={faTrashAlt}
-              size="sm"
-            />
+            <Trash2 size={16} />
           </IconButton>
         </Tooltip>,
         <Tooltip
@@ -326,10 +319,7 @@ const CharacterTable: FC = () => {
               )
             }}
           >
-            <FontAwesomeIcon
-              icon={faPlus}
-              size="sm"
-            />
+            <Plus size={16} />
           </IconButton>
         </Tooltip>
       ],

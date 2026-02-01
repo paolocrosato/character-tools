@@ -1,12 +1,4 @@
 import {
-  faCheckCircle,
-  faFileImport,
-  faHourglass,
-  faSpinner,
-  faTimesCircle
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
   Box,
   List,
   ListItem,
@@ -15,6 +7,7 @@ import {
   ListSubheader,
   Typography
 } from '@mui/material'
+import { CheckCircle2, Hourglass, Loader2, Upload, XCircle } from 'lucide-react'
 import { type FC, useCallback, useEffect, useState } from 'react'
 import Drop from '@/components/ui/Drop'
 import { createCharacterBook } from '@/services/characterBooks'
@@ -128,10 +121,7 @@ const ImportCharacterBook: FC = () => {
               multiple: true
             }}
           >
-            <FontAwesomeIcon
-              icon={faFileImport}
-              size="3x"
-            />
+            <Upload size={32} />
             <Typography
               variant="subtitle1"
               component="h2"
@@ -197,10 +187,7 @@ const ImportCharacterBook: FC = () => {
                                 color: 'success.main'
                               }}
                             >
-                              <FontAwesomeIcon
-                                icon={faCheckCircle}
-                                size="lg"
-                              />
+                              <CheckCircle2 size={24} />
                             </ListItemIcon>
                             <ListItemText
                               primary={importedFile.data.name}
@@ -219,10 +206,7 @@ const ImportCharacterBook: FC = () => {
                               color: 'error.main'
                             }}
                           >
-                            <FontAwesomeIcon
-                              icon={faTimesCircle}
-                              size="lg"
-                            />
+                            <XCircle size={24} />
                           </ListItemIcon>
                           <ListItemText
                             primary={importedFile.file.name}
@@ -239,10 +223,9 @@ const ImportCharacterBook: FC = () => {
                     disablePadding
                   >
                     <ListItemIcon>
-                      <FontAwesomeIcon
-                        icon={faSpinner}
-                        spin
-                        size="lg"
+                      <Loader2
+                        className="animate-spin"
+                        size={24}
                       />
                     </ListItemIcon>
                     <ListItemText
@@ -260,10 +243,7 @@ const ImportCharacterBook: FC = () => {
                         disablePadding
                       >
                         <ListItemIcon>
-                          <FontAwesomeIcon
-                            icon={faHourglass}
-                            size="lg"
-                          />
+                          <Hourglass size={24} />
                         </ListItemIcon>
                         <ListItemText
                           primary={file.name}

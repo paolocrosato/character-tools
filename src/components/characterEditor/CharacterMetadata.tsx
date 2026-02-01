@@ -1,5 +1,3 @@
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   Chip,
   IconButton,
@@ -7,6 +5,7 @@ import {
   TextField,
   Typography
 } from '@mui/material'
+import { Plus } from 'lucide-react'
 import { type FC, useState } from 'react'
 import useAppDispatch from '@/hooks/useAppDispatch'
 import useAppSelector from '@/hooks/useAppSelector'
@@ -135,7 +134,7 @@ const CharacterMetadata: FC = () => {
                   color="primary"
                   onClick={handleAddTag}
                 >
-                  <FontAwesomeIcon icon={faPlus} />
+                  <Plus size={16} />
                 </IconButton>
               </InputAdornment>
             )

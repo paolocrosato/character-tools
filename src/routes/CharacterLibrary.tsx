@@ -1,10 +1,6 @@
-import {
-  faFileImport,
-  faUsersBetweenLines
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Tab, type Theme, Typography, useMediaQuery } from '@mui/material'
+import { Upload, Users } from 'lucide-react'
 import { type FC, useState } from 'react'
 import CharacterTable from '@/components/characterLibrary/CharacterTable'
 import ImportCharacter from '@/components/characterLibrary/ImportCharacter'
@@ -47,17 +43,17 @@ const CharacterLibrary: FC = () => {
             }}
           >
             <Tab
-              icon={<FontAwesomeIcon icon={faUsersBetweenLines} />}
+              icon={<Users size={20} />}
               label="Character Library"
               value="Library"
             />
             <Tab
-              icon={<FontAwesomeIcon icon={faFileImport} />}
+              icon={<Upload size={20} />}
               label="Import Character"
               value="Import"
             />
             <Tab
-              icon={<FontAwesomeIcon icon={faUsersBetweenLines} />}
+              icon={<Users size={20} />}
               label="Manage Library"
               value="Manage"
             />
