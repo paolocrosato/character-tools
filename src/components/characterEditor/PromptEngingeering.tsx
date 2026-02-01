@@ -1,26 +1,43 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Autocomplete, TextField, Typography } from '@mui/material'
-import { useLiveQuery } from 'dexie-react-hooks'
-import { type FC } from 'react'
+import { type FC, useEffect, useState } from 'react'
 import CopyButton from '@/components/CopyButton'
 import ToolbarDial from '@/components/characterEditor/ToolbarDial'
 import TextFieldWithTokenCounter from '@/components/ui/form/TextFieldWithTokenCounter'
 import useAppDispatch from '@/hooks/useAppDispatch'
 import useAppSelector from '@/hooks/useAppSelector'
-import { dataBase } from '@/lib/dexie'
+import { getAllCharacterBooks } from '@/services/characterBooks'
 import { updateCharacterEditor } from '@/state/characterEditorSlice'
+import { type CharacterBookDatabaseData } from '@/types/lorebook'
 
 const PromptEngingeering: FC = () => {
-  const characterBooks = useLiveQuery(async () => {
-    const characterBooks = await dataBase.characterBooks.toArray()
-    return characterBooks.map((characterBook) => ({
-      label: characterBook.name,
-      value: characterBook.id
-    }))
-  })
   const characterEditorState = useAppSelector((state) => state.characterEditor)
   const dispatch = useAppDispatch()
+  const [characterBooks, setCharacterBooks] = useState<
+    Array<{ label: string; value: string }>
+  >([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchCharacterBooks = async () => {
+      try {
+        const books = await getAllCharacterBooks()
+        setCharacterBooks(
+          books.map((book: CharacterBookDatabaseData) => ({
+            label: book.name,
+            value: book.id
+          }))
+        )
+      } catch (error) {
+        console.error('Failed to fetch character books:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchCharacterBooks()
+  }, [])
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     dispatch(updateCharacterEditor({ [event.target.id]: event.target.value }))
@@ -80,7 +97,7 @@ const PromptEngingeering: FC = () => {
         fullWidth
         margin="normal"
       />
-      {characterBooks === undefined ? (
+      {isLoading ? (
         <Typography
           variant="body1"
           gutterBottom

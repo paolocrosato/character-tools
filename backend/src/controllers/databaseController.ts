@@ -29,54 +29,16 @@ export class DatabaseController {
   static importDatabase = asyncHandler(async (req: Request, res: Response) => {
     const body = req.body;
     
-    // Log received data for debugging
-    console.log('=== DEBUG: Import Database ===');
-    console.log('Data type:', typeof body);
-    console.log('Has formatName?', body?.formatName);
-    console.log('body.data keys:', body?.data ? Object.keys(body.data) : 'no data');
-    console.log('body.data.tables exists?', body?.data?.tables !== undefined);
-    console.log('body.data.tables type:', typeof body?.data?.tables);
-    console.log('body.data.tables length:', Array.isArray(body?.data?.tables) ? body.data.tables.length : 'N/A');
-    console.log('body.data.data exists?', body?.data?.data !== undefined);
-    console.log('body.data.data type:', typeof body?.data?.data);
-    console.log('body.data.data length:', Array.isArray(body?.data?.data) ? body.data.data.length : 'N/A');
-    
-    if (body?.data?.tables && body.data.tables.length > 0) {
-      console.log('First item in body.data.tables:', JSON.stringify(body.data.tables[0], null, 2));
-    }
-    if (body?.data?.data && body.data.data.length > 0) {
-      console.log('First item in body.data.data:', JSON.stringify(body.data.data[0], null, 2));
-    }
-    
-    // Handle both Dexie export format and simple format
+    // Simple format: { characters: [...], characterBooks: [...] }
     let characters: CharacterWithImage[] = [];
     let characterBooks: CharacterBookDatabaseData[] = [];
     
-    if (body.formatName === 'dexie' && Array.isArray(body.data?.tables)) {
-      // Dexie export format
-      console.log('Processing Dexie export format - looking in body.data.tables');
-      for (const table of body.data.data) {
-        console.log(`Checking table: ${JSON.stringify(table)}`);
-        if (table.tableName === 'characters' && Array.isArray(table.rows)) {
-          characters = table.rows;
-          console.log('Found characters in body.data.data');
-        } else if (table.tableName === 'characterBooks' && Array.isArray(table.rows)) {
-          characterBooks = table.rows;
-          console.log('Found characterBooks in body.data.data');
-        }
-      }
-    } else {
-      // Simple format: { characters: [...], characterBooks: [...] }
-      if (body && body.data && Array.isArray(body.data.characters)) {
-        characters = body.data.characters;
-      }
-      if (body && body.data && Array.isArray(body.data.characterBooks)) {
-        characterBooks = body.data.characterBooks;
-      }
+    if (body && body.data && Array.isArray(body.data.characters)) {
+      characters = body.data.characters;
     }
-    
-    console.log('Parsed characters:', characters.length);
-    console.log('Parsed characterBooks:', characterBooks.length);
+    if (body && body.data && Array.isArray(body.data.characterBooks)) {
+      characterBooks = body.data.characterBooks;
+    }
     
     // Import character books first
     for (const book of characterBooks) {
@@ -88,30 +50,20 @@ export class DatabaseController {
     }
     
     // Import characters
-    console.log(`Starting to import ${characters.length} characters...`);
     for (const character of characters) {
       try {
-        console.log(`Importing character: ${character.name}`);
         const { image, ...characterData } = character;
         const created = await CharacterService.create(characterData);
-        console.log(`✓ Successfully created character with ID: ${created.id}`);
         
         // Save image if exists
         if (image) {
           const imagePath = this.saveImageFromBase64(created.id, image);
           await CharacterService.updateImagePath(created.id, imagePath);
-          console.log(`✓ Saved image for character: ${created.id}`);
         }
       } catch (error) {
-        console.error(`✗ Failed to import character: ${character.name}`, error);
+        console.error(`Failed to import character: ${character.name}`, error);
       }
     }
-    console.log('Finished importing characters');
-    
-    // Verify characters were actually saved
-    const countStmt = db.prepare('SELECT COUNT(*) as count FROM characters');
-    const countResult = countStmt.get() as { count: number };
-    console.log(`Total characters in database after import: ${countResult.count}`);
     
     const response: ApiResponse<{ imported: number }> = {
       success: true,
