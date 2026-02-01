@@ -9,12 +9,13 @@ import {
   type GridPaginationModel,
   type GridSortModel
 } from '@mui/x-data-grid'
-import { useLiveQuery } from 'dexie-react-hooks'
-import { type FC, useCallback, useState } from 'react'
+import { type FC, useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAppDispatch from '@/hooks/useAppDispatch'
-import { dataBase } from '@/lib/dexie'
-import { deleteCharacterBook } from '@/services/characterBooks'
+import {
+  deleteCharacterBook,
+  getAllCharacterBooks
+} from '@/services/characterBooks'
 import { setCharacterBookEditor } from '@/state/characterBookEditorSlice'
 import { setAlert, setDialog } from '@/state/feedbackSlice'
 import { type CharacterBookDatabaseData } from '@/types/lorebook'
@@ -30,81 +31,107 @@ const CharacterBookTable: FC = () => {
   const [totalCharacterBooks, setTotalCharacterBooks] = useState(0)
   const [filterModel, setFilterModel] = useState<GridFilterModel>({ items: [] })
   const [sortModel, setSortModel] = useState<GridSortModel>([])
+  const [characterBooks, setCharacterBooks] = useState<
+    CharacterBookDatabaseData[]
+  >([])
+  const [refreshKey, setRefreshKey] = useState(0)
 
-  const characterBooks = useLiveQuery(async () => {
-    setIsLoading(true)
-    const characterBooks = dataBase.characterBooks
-    const sortedCharacterBooks =
-      sortModel.length === 0
-        ? characterBooks.toCollection()
-        : sortModel[0].sort === 'asc'
-          ? characterBooks.orderBy(sortModel[0].field)
-          : characterBooks.orderBy(sortModel[0].field).reverse()
-    const filteredCharacterBooks = sortedCharacterBooks.filter(
-      (characterBook) => {
-        if (filterModel.items.length === 0) {
-          return true
+  // Function to refresh character books
+  const refreshCharacterBooks = useCallback(() => {
+    setRefreshKey((prev) => prev + 1)
+  }, [])
+
+  // Fetch character books from backend API
+  useEffect(() => {
+    const fetchCharacterBooks = async () => {
+      setIsLoading(true)
+      try {
+        const allCharacterBooks = await getAllCharacterBooks()
+
+        // Apply filtering
+        let filtered = allCharacterBooks
+        if (filterModel.items.length > 0) {
+          const fieldToFilter = filterModel.items[0].field as
+            | 'name'
+            | 'description'
+          const filterValue = (filterModel.items[0].value as string) ?? ''
+          const operator = filterModel.items[0].operator
+
+          filtered = allCharacterBooks.filter((characterBook) => {
+            if (fieldToFilter === undefined || filterValue === undefined) {
+              return true
+            }
+            switch (operator) {
+              case 'contains':
+                return (
+                  characterBook[fieldToFilter]
+                    ?.toLowerCase()
+                    .includes(filterValue.toLowerCase()) ?? false
+                )
+              case 'startsWith':
+                return (
+                  characterBook[fieldToFilter]
+                    ?.toLowerCase()
+                    .startsWith(filterValue.toLowerCase()) ?? false
+                )
+              case 'endsWith':
+                return (
+                  characterBook[fieldToFilter]
+                    ?.toLowerCase()
+                    .endsWith(filterValue.toLowerCase()) ?? false
+                )
+              case 'equals':
+                return (
+                  characterBook[fieldToFilter]?.toLowerCase() ===
+                  filterValue.toLowerCase()
+                )
+              case 'notEquals':
+                return (
+                  characterBook[fieldToFilter]?.toLowerCase() !==
+                  filterValue.toLowerCase()
+                )
+              case 'is':
+                return (
+                  characterBook[fieldToFilter]?.toLowerCase() ===
+                  filterValue.toLowerCase()
+                )
+              case 'isNot':
+                return (
+                  characterBook[fieldToFilter]?.toLowerCase() !==
+                  filterValue.toLowerCase()
+                )
+              default:
+                return true
+            }
+          })
         }
-        const fieldToFilter = filterModel.items[0].field as
-          | 'name'
-          | 'description'
-        const filterValue = (filterModel.items[0].value as string) ?? ''
-        if (fieldToFilter === undefined || filterValue === undefined) {
-          return true
+
+        // Apply sorting
+        if (sortModel.length > 0) {
+          const { field, sort } = sortModel[0]
+          filtered.sort((a, b) => {
+            const aValue = a[field as keyof CharacterBookDatabaseData]
+            const bValue = b[field as keyof CharacterBookDatabaseData]
+            if (aValue == null && bValue == null) return 0
+            if (aValue == null) return sort === 'asc' ? 1 : -1
+            if (bValue == null) return sort === 'asc' ? -1 : 1
+            if (aValue < bValue) return sort === 'asc' ? -1 : 1
+            if (aValue > bValue) return sort === 'asc' ? 1 : -1
+            return 0
+          })
         }
-        switch (filterModel.items[0].operator) {
-          case 'contains':
-            return (
-              characterBook[fieldToFilter]
-                ?.toLowerCase()
-                .includes(filterValue.toLowerCase()) ?? false
-            )
-          case 'startsWith':
-            return (
-              characterBook[fieldToFilter]
-                ?.toLowerCase()
-                .startsWith(filterValue.toLowerCase()) ?? false
-            )
-          case 'endsWith':
-            return (
-              characterBook[fieldToFilter]
-                ?.toLowerCase()
-                .endsWith(filterValue.toLowerCase()) ?? false
-            )
-          case 'equals':
-            return (
-              characterBook[fieldToFilter]?.toLowerCase() ===
-              filterValue.toLowerCase()
-            )
-          case 'notEquals':
-            return (
-              characterBook[fieldToFilter]?.toLowerCase() !==
-              filterValue.toLowerCase()
-            )
-          case 'is':
-            return (
-              characterBook[fieldToFilter]?.toLowerCase() ===
-              filterValue.toLowerCase()
-            )
-          case 'isNot':
-            return (
-              characterBook[fieldToFilter]?.toLowerCase() !==
-              filterValue.toLowerCase()
-            )
-          default:
-            return true
-        }
+
+        setTotalCharacterBooks(filtered.length)
+        setCharacterBooks(filtered)
+      } catch (error) {
+        console.error('Failed to fetch character books:', error)
+      } finally {
+        setIsLoading(false)
       }
-    )
-    const totalCharacterBooks = await filteredCharacterBooks.count()
-    setTotalCharacterBooks(totalCharacterBooks)
-    const paginatedCharacterBooks = await filteredCharacterBooks
-      .offset(paginationModel.page * paginationModel.pageSize)
-      .limit(paginationModel.pageSize)
-      .toArray()
-    setIsLoading(false)
-    return paginatedCharacterBooks
-  }, [paginationModel, filterModel, sortModel])
+    }
+
+    fetchCharacterBooks()
+  }, [paginationModel, filterModel, sortModel, refreshKey])
 
   const renderActions: GridActionsColDef<CharacterBookDatabaseData>['getActions'] =
     useCallback(
@@ -167,6 +194,7 @@ const CharacterBookTable: FC = () => {
                       onClick: () => {
                         deleteCharacterBook(params.row.id)
                           .then(() => {
+                            refreshCharacterBooks()
                             dispatch(
                               setAlert({
                                 title: 'Character deleted',

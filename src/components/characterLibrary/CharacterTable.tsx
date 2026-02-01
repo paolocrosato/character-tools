@@ -11,36 +11,48 @@ import {
   type GridSortModel,
   getGridStringOperators
 } from '@mui/x-data-grid'
-import { useLiveQuery } from 'dexie-react-hooks'
-import { type FC, useCallback, useState } from 'react'
+import { type FC, useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAppDispatch from '@/hooks/useAppDispatch'
-import { dataBase } from '@/lib/dexie'
-import { deleteCharacter } from '@/services/character'
+import { deleteCharacter, getAllCharacters } from '@/services/character'
 import { setCharacterEditor } from '@/state/characterEditorSlice'
 import { setAlert, setDialog } from '@/state/feedbackSlice'
 import { type CharacterDatabaseData } from '@/types/character'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+
 const renderImage = (
   params: GridRenderCellParams<CharacterDatabaseData>
-): React.ReactNode => (
-  <div
-    css={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignContent: 'center',
-      width: '100%',
-      aspectRatio: '1'
-    }}
-  >
-    <img
+): React.ReactNode => {
+  const imagePath = params.value
+  const imageUrl = imagePath?.startsWith('http')
+    ? imagePath
+    : imagePath
+      ? `${API_URL.replace('/api', '')}/${imagePath}`
+      : undefined
+
+  return (
+    <div
       css={{
-        objectFit: 'cover'
+        display: 'flex',
+        justifyContent: 'center',
+        alignContent: 'center',
+        width: '100%',
+        aspectRatio: '1'
       }}
-      src={params.value}
-    />
-  </div>
-)
+    >
+      {imageUrl && (
+        <img
+          css={{
+            objectFit: 'cover'
+          }}
+          src={imageUrl}
+          alt={params.row.name}
+        />
+      )}
+    </div>
+  )
+}
 
 const filterOperators = getGridStringOperators().filter(
   (operator) => operator.value !== 'isAnyOf'
@@ -57,82 +69,111 @@ const CharacterTable: FC = () => {
   const [totalCharacters, setTotalCharacters] = useState(0)
   const [filterModel, setFilterModel] = useState<GridFilterModel>({ items: [] })
   const [sortModel, setSortModel] = useState<GridSortModel>([])
+  const [characters, setCharacters] = useState<CharacterDatabaseData[]>([])
+  const [refreshKey, setRefreshKey] = useState(0)
 
-  const characters = useLiveQuery(async () => {
-    setIsLoading(true)
-    const characters = dataBase.characters
-    const sortedCharacters =
-      sortModel.length === 0
-        ? characters.toCollection()
-        : sortModel[0].sort === 'asc'
-          ? characters.orderBy(sortModel[0].field)
-          : characters.orderBy(sortModel[0].field).reverse()
-    const filteredCharacters = sortedCharacters.filter((character) => {
-      if (filterModel.items.length === 0) {
-        return true
+  // Function to refresh characters
+  const refreshCharacters = useCallback(() => {
+    setRefreshKey((prev) => prev + 1)
+  }, [])
+
+  // Fetch characters from backend API
+  useEffect(() => {
+    const fetchCharacters = async () => {
+      setIsLoading(true)
+      try {
+        const allCharacters = await getAllCharacters()
+
+        // Apply filtering
+        let filtered = allCharacters
+        if (filterModel.items.length > 0) {
+          const fieldToFilter = filterModel.items[0].field as
+            | 'name'
+            | 'description'
+            | 'personality'
+            | 'creator'
+            | 'creator_notes'
+            | 'character_version'
+            | 'tags'
+            | 'system_prompt'
+            | 'post_history_instructions'
+          const filterValue = (filterModel.items[0].value as string) ?? ''
+          const operator = filterModel.items[0].operator
+
+          filtered = allCharacters.filter((character) => {
+            if (fieldToFilter === undefined || filterValue === undefined) {
+              return true
+            }
+            switch (operator) {
+              case 'equals':
+                if (fieldToFilter === 'tags') {
+                  return character[fieldToFilter].some(
+                    (tag) => tag === filterValue
+                  )
+                }
+                return character[fieldToFilter] === filterValue
+              case 'startsWith':
+                if (fieldToFilter === 'tags') {
+                  return character[fieldToFilter].some((tag) =>
+                    tag.startsWith(filterValue)
+                  )
+                }
+                return character[fieldToFilter].startsWith(filterValue)
+              case 'endsWith':
+                if (fieldToFilter === 'tags') {
+                  return character[fieldToFilter].some((tag) =>
+                    tag.endsWith(filterValue)
+                  )
+                }
+                return character[fieldToFilter].endsWith(filterValue)
+              case 'isEmpty':
+                if (fieldToFilter === 'tags') {
+                  return character[fieldToFilter].length === 0
+                }
+                return character[fieldToFilter] === ''
+              case 'isNotEmpty':
+                if (fieldToFilter === 'tags') {
+                  return character[fieldToFilter].length > 0
+                }
+                return character[fieldToFilter] !== ''
+              case 'contains':
+              default:
+                if (fieldToFilter === 'tags') {
+                  return character[fieldToFilter].some((tag) =>
+                    tag.includes(filterValue)
+                  )
+                }
+                return character[fieldToFilter].includes(filterValue)
+            }
+          })
+        }
+
+        // Apply sorting
+        if (sortModel.length > 0) {
+          const { field, sort } = sortModel[0]
+          filtered.sort((a, b) => {
+            const aValue = a[field as keyof CharacterDatabaseData]
+            const bValue = b[field as keyof CharacterDatabaseData]
+            if (aValue == null && bValue == null) return 0
+            if (aValue == null) return sort === 'asc' ? 1 : -1
+            if (bValue == null) return sort === 'asc' ? -1 : 1
+            if (aValue < bValue) return sort === 'asc' ? -1 : 1
+            if (aValue > bValue) return sort === 'asc' ? 1 : -1
+            return 0
+          })
+        }
+
+        setTotalCharacters(filtered.length)
+        setCharacters(filtered)
+      } catch (error) {
+        console.error('Failed to fetch characters:', error)
+      } finally {
+        setIsLoading(false)
       }
-      const fieldToFilter = filterModel.items[0].field as
-        | 'name'
-        | 'description'
-        | 'personality'
-        | 'creator'
-        | 'creator_notes'
-        | 'character_version'
-        | 'tags'
-        | 'system_prompt'
-        | 'post_history_instructions'
-      const filterValue = (filterModel.items[0].value as string) ?? ''
-      if (fieldToFilter === undefined || filterValue === undefined) {
-        return true
-      }
-      switch (filterModel.items[0].operator) {
-        case 'equals':
-          if (fieldToFilter === 'tags') {
-            return character[fieldToFilter].some((tag) => tag === filterValue)
-          }
-          return character[fieldToFilter] === filterValue
-        case 'startsWith':
-          if (fieldToFilter === 'tags') {
-            return character[fieldToFilter].some((tag) =>
-              tag.startsWith(filterValue)
-            )
-          }
-          return character[fieldToFilter].startsWith(filterValue)
-        case 'endsWith':
-          if (fieldToFilter === 'tags') {
-            return character[fieldToFilter].some((tag) =>
-              tag.endsWith(filterValue)
-            )
-          }
-          return character[fieldToFilter].endsWith(filterValue)
-        case 'isEmpty':
-          if (fieldToFilter === 'tags') {
-            return character[fieldToFilter].length === 0
-          }
-          return character[fieldToFilter] === ''
-        case 'isNotEmpty':
-          if (fieldToFilter === 'tags') {
-            return character[fieldToFilter].length > 0
-          }
-          return character[fieldToFilter] !== ''
-        case 'contains':
-        default:
-          if (fieldToFilter === 'tags') {
-            return character[fieldToFilter].some((tag) =>
-              tag.includes(filterValue)
-            )
-          }
-          return character[fieldToFilter].includes(filterValue)
-      }
-    })
-    setTotalCharacters(await filteredCharacters.count())
-    const paginatedCharacters = filteredCharacters
-      .offset(paginationModel.page * paginationModel.pageSize)
-      .limit(paginationModel.pageSize)
-    const charactersArray = await paginatedCharacters.toArray()
-    setIsLoading(false)
-    return charactersArray
-  }, [paginationModel, sortModel, filterModel])
+    }
+
+    fetchCharacters()
+  }, [paginationModel, sortModel, filterModel, refreshKey])
 
   const renderActions: GridActionsColDef<CharacterDatabaseData>['getActions'] =
     useCallback(
@@ -157,7 +198,16 @@ const CharacterTable: FC = () => {
                     {
                       label: 'Edit',
                       onClick: () => {
-                        dispatch(setCharacterEditor(params.row))
+                        // Convert image_path to full URL for editor
+                        const imageUrl = params.row.image_path
+                          ? `${API_URL.replace('/api', '')}/${params.row.image_path}`
+                          : undefined
+                        dispatch(
+                          setCharacterEditor({
+                            ...params.row,
+                            image: imageUrl
+                          })
+                        )
                         navigate('/character-editor?tab=character-data')
                       },
                       severity: 'success'
@@ -195,6 +245,7 @@ const CharacterTable: FC = () => {
                       onClick: () => {
                         deleteCharacter(params.row.id)
                           .then(() => {
+                            refreshCharacters()
                             dispatch(
                               setAlert({
                                 title: 'Character deleted',
@@ -255,10 +306,15 @@ const CharacterTable: FC = () => {
                     {
                       label: 'Edit',
                       onClick: () => {
+                        // Convert image_path to full URL for editor
+                        const imageUrl = params.row.image_path
+                          ? `${API_URL.replace('/api', '')}/${params.row.image_path}`
+                          : undefined
                         dispatch(
                           setCharacterEditor({
                             ...params.row,
-                            id: undefined
+                            id: undefined,
+                            image: imageUrl
                           })
                         )
                         navigate('/character-editor?tab=character-data')
@@ -298,7 +354,7 @@ const CharacterTable: FC = () => {
       filterable: false
     },
     {
-      field: 'image',
+      field: 'image_path',
       headerName: 'Image',
       width: 75,
       sortable: false,
